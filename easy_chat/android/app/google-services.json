@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "882629071130",
+    "firebase_url": "https://easy-chat-becc2.firebaseio.com",
+    "project_id": "easy-chat-becc2",
+    "storage_bucket": "easy-chat-becc2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:882629071130:android:8b93a8a9d1c05ef3475ca3",
+        "android_client_info": {
+          "package_name": "com.hadi.easy_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "882629071130-2jkmj4thoovtktcqruc8laiddr84t81b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAb4utTcG5SHrdd4h6LGxwwjhcLG3yNMSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "882629071130-2jkmj4thoovtktcqruc8laiddr84t81b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
