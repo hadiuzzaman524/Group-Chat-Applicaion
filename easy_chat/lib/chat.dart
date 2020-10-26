@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +13,8 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   final FirebaseAuth auth = FirebaseAuth.instance;
-  final firestore=Firestore.instance;
+  // ignore: deprecated_member_use
+  final firestore = Firestore.instance;
   User logInUser;
   String userMessage;
 
@@ -29,6 +29,18 @@ class _ChatState extends State<Chat> {
     }
 
     print(logInUser.email);
+  }
+
+  /*
+  Retrieve data from cloud fire store.
+   */
+  getMessage() async{
+    // ignore: deprecated_member_use
+    final messages=await firestore.collection('Messages').getDocuments();
+    // ignore: deprecated_member_use
+    for(var m in messages.documents){
+      print(m.data());
+    }
   }
 
   @override
@@ -49,9 +61,10 @@ class _ChatState extends State<Chat> {
             padding: const EdgeInsets.all(10.0),
             child: GestureDetector(
               onTap: () {
-                auth.signOut();
+                /*auth.signOut();
                 SystemNavigator.pop();
-                showToast('Sign Out and Exit Successfully');
+                showToast('Sign Out and Exit Successfully');*/
+                getMessage();
               },
               child: Icon(
                 Icons.backspace,
@@ -70,7 +83,7 @@ class _ChatState extends State<Chat> {
                   flex: 6,
                   child: TextField(
                     scrollPadding: EdgeInsets.zero,
-                    textAlign:TextAlign.center,
+                    textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.black87,
                     ),
@@ -78,30 +91,28 @@ class _ChatState extends State<Chat> {
                       hintText: 'Type your message here',
                       filled: true,
                       fillColor: Color(0xFFEDEDED),
-                      contentPadding: EdgeInsets.only(top: 0,bottom: 0,left: 10,right: 0.0),
-                      border:OutlineInputBorder(
+                      contentPadding: EdgeInsets.only(
+                          top: 0, bottom: 0, left: 10, right: 0.0),
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.all(
                           Radius.circular(30.0),
                         ),
-
                       ),
                     ),
-                    onChanged: (value){
-                      userMessage=value;
+                    onChanged: (value) {
+                      userMessage = value;
                     },
                   ),
                 ),
                 Expanded(
                   flex: 1,
                   child: GestureDetector(
-                    onTap: (){
-                     // print(userMessage);
-                      firestore.collection('Messages').add(
-                        {
-                          'sender':logInUser.email,
-                          'information':userMessage,
-                        }
-                      );
+                    onTap: () {
+                      // print(userMessage);
+                      firestore.collection('Messages').add({
+                        'sender': logInUser.email,
+                        'information': userMessage,
+                      });
                     },
                     child: Icon(
                       Icons.send_sharp,
