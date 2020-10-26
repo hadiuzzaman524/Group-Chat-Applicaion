@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,6 +7,9 @@ import 'package:flutter/services.dart';
 import 'constants.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+User logInUser;
+var userEmail;
 
 class Chat extends StatefulWidget {
   static const id = 'chat_page';
@@ -18,12 +23,15 @@ class _ChatState extends State<Chat> {
 
   // ignore: deprecated_member_use
   final firestore = Firestore.instance;
-  User logInUser;
+
   String userMessage;
+  bool isMe;
+
+
   /*
   TextEditingController can be used in clear the textField
    */
-  TextEditingController textEditingController=TextEditingController();
+  TextEditingController textEditingController = TextEditingController();
 
   getCurrentUser() {
     try {
@@ -35,7 +43,7 @@ class _ChatState extends State<Chat> {
       print(e);
     }
 
-    print(logInUser.email);
+    userEmail = logInUser.email;
   }
 
   /*
@@ -145,7 +153,6 @@ class _ChatState extends State<Chat> {
                         'sender': logInUser.email,
                         'information': userMessage,
                       });
-
                     },
                     child: Icon(
                       Icons.send_sharp,
@@ -186,7 +193,16 @@ class StreamBuilderInfo extends StatelessWidget {
             final sender = msg['sender'];
             final textMsg = msg['information'];
 
-            final text = MessageStyle(sender: sender, textMsg: textMsg);
+            bool flag=false;
+           if(sender==userEmail){
+              flag=true;
+            }
+          print(userEmail);
+            final text = MessageStyle(
+              sender: sender,
+              textMsg: textMsg,
+              isMe: flag,//sender == logInUser.email,
+            );
             textWidgets.add(text);
           }
           return Expanded(
@@ -205,14 +221,15 @@ class StreamBuilderInfo extends StatelessWidget {
 }
 
 class MessageStyle extends StatelessWidget {
-  const MessageStyle({
-    Key key,
+  MessageStyle({
     @required this.sender,
     @required this.textMsg,
-  }) : super(key: key);
+    @required this.isMe,
+  });
 
   final sender;
   final textMsg;
+  final isMe;
 
   @override
   Widget build(BuildContext context) {
@@ -232,8 +249,13 @@ class MessageStyle extends StatelessWidget {
             ),
           ),
           Material(
-            borderRadius: BorderRadius.circular(30.0),
-            color: Colors.blue,
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(30.0),
+              bottomRight: Radius.circular(30.0),
+              topLeft: Radius.circular(30.0),
+            ),
+            elevation: 5.0,
+            color: isMe?Colors.blue:Colors.amber,
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
