@@ -46,9 +46,14 @@ class _ChatState extends State<Chat> {
   getStream() async{
     /*
     snapshots() method return a Stream , it help us to see message immediately,
-    when any text or data push in storage at a time Snapshots notify us , but privious
+    when any text or data push in storage at a time Snapshots notify us , but previous
     getMessage() method can not notify immediately this method need every time
-    refresh our app
+    refresh our app....
+    More about Stream:-
+    Future return e future object just for singular form , more clearly it return a single item
+    we wait for single pieces of data or object, But in Stream it works a List of data or object
+    at a time it return previous data and also return newly inserted or update data without refresh
+    our main app.
      */
     await for(var snapshots in firestore.collection('Messages').snapshots()){
       // ignore: deprecated_member_use
