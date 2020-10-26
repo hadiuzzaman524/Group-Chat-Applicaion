@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'constants.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Chat extends StatefulWidget {
@@ -19,6 +20,10 @@ class _ChatState extends State<Chat> {
   final firestore = Firestore.instance;
   User logInUser;
   String userMessage;
+  /*
+  TextEditingController can be used in clear the textField
+   */
+  TextEditingController textEditingController=TextEditingController();
 
   getCurrentUser() {
     try {
@@ -99,39 +104,15 @@ class _ChatState extends State<Chat> {
       body: Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          //crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            StreamBuilder<QuerySnapshot>(
-              /*
-              snapshots return a stream
-               */
-              stream: firestore.collection('Messages').snapshots(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  // ignore: deprecated_member_use
-                  List<Text> textWidgets = [];
-                  // ignore: deprecated_member_use
-                  final messages = snapshot.data.documents;
-                  for (var msg in messages) {
-                    final sender = msg['sender'];
-                    final textMsg = msg['information'];
-
-                    final text = Text('$sender \n $textMsg');
-                    textWidgets.add(text);
-                  }
-                  return Column(
-                    children: textWidgets,
-                  );
-                } else {
-                  return Container();
-                }
-              },
-            ),
+            StreamBuilderInfo(firestore: firestore),
             Row(
               children: [
                 Expanded(
                   flex: 6,
                   child: TextField(
+                    controller: textEditingController,
                     scrollPadding: EdgeInsets.zero,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -158,11 +139,13 @@ class _ChatState extends State<Chat> {
                   flex: 1,
                   child: GestureDetector(
                     onTap: () {
+                      textEditingController.clear();
                       // print(userMessage);
                       firestore.collection('Messages').add({
                         'sender': logInUser.email,
                         'information': userMessage,
                       });
+
                     },
                     child: Icon(
                       Icons.send_sharp,
@@ -176,5 +159,95 @@ class _ChatState extends State<Chat> {
         ),
       ),
     ));
+  }
+}
+
+class StreamBuilderInfo extends StatelessWidget {
+  const StreamBuilderInfo({
+    @required this.firestore,
+  });
+
+  final FirebaseFirestore firestore;
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      /*
+      snapshots return a stream
+       */
+      stream: firestore.collection('Messages').snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          // ignore: deprecated_member_use
+          List<MessageStyle> textWidgets = [];
+          // ignore: deprecated_member_use
+          final messages = snapshot.data.documents;
+          for (var msg in messages) {
+            final sender = msg['sender'];
+            final textMsg = msg['information'];
+
+            final text = MessageStyle(sender: sender, textMsg: textMsg);
+            textWidgets.add(text);
+          }
+          return Expanded(
+            child: ListView(
+              children: textWidgets,
+            ),
+          );
+        } else {
+          return CircularProgressIndicator(
+            backgroundColor: Colors.blue,
+          );
+        }
+      },
+    );
+  }
+}
+
+class MessageStyle extends StatelessWidget {
+  const MessageStyle({
+    Key key,
+    @required this.sender,
+    @required this.textMsg,
+  }) : super(key: key);
+
+  final sender;
+  final textMsg;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(right: 5.0),
+            child: Text(
+              '$sender',
+              style: TextStyle(
+                fontSize: 10.0,
+                color: Colors.black54,
+              ),
+            ),
+          ),
+          Material(
+            borderRadius: BorderRadius.circular(30.0),
+            color: Colors.blue,
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+              child: Text(
+                '$textMsg',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
