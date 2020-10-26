@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +14,7 @@ class Chat extends StatefulWidget {
 
 class _ChatState extends State<Chat> {
   final FirebaseAuth auth = FirebaseAuth.instance;
+
   // ignore: deprecated_member_use
   final firestore = Firestore.instance;
   User logInUser;
@@ -34,7 +36,7 @@ class _ChatState extends State<Chat> {
   /*
   Retrieve data from cloud fire store.
    */
- /* getMessage() async{
+  /* getMessage() async{
     // ignore: deprecated_member_use
     final messages=await firestore.collection('Messages').getDocuments();
     // ignore: deprecated_member_use
@@ -43,7 +45,7 @@ class _ChatState extends State<Chat> {
     }
   }*/
 
-  getStream() async{
+  getStream() async {
     /*
     snapshots() method return a Stream , it help us to see message immediately,
     when any text or data push in storage at a time Snapshots notify us , but previous
@@ -55,9 +57,9 @@ class _ChatState extends State<Chat> {
     at a time it return previous data and also return newly inserted or update data without refresh
     our main app.
      */
-    await for(var snapshots in firestore.collection('Messages').snapshots()){
+    await for (var snapshots in firestore.collection('Messages').snapshots()) {
       // ignore: deprecated_member_use
-      for(var m in snapshots.documents){
+      for (var m in snapshots.documents) {
         print(m.data());
       }
     }
@@ -95,8 +97,35 @@ class _ChatState extends State<Chat> {
         ],
       ),
       body: Container(
-        child: ListView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            StreamBuilder<QuerySnapshot>(
+              stream: firestore.collection('Messages').snapshots(),
+              builder: (context, snapshot) {
+                // ignore: deprecated_member_use
+                final messages = snapshot.data.documents;
+                if (snapshot.hasData) {
+                  // ignore: deprecated_member_use
+                  final messages = snapshot.data.documents;
+                  List<Text> messageWidgets = [];
+
+                  for (var msg in messages) {
+                    final message = msg['information'];
+                    final messageWidget = Text('$message');
+                    messageWidgets.add(messageWidget);
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: messageWidgets,
+                  );
+                } else {
+                  return Container();
+                }
+              },
+            ),
             Row(
               children: [
                 Expanded(
