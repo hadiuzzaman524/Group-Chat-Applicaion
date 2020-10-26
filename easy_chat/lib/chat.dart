@@ -99,27 +99,28 @@ class _ChatState extends State<Chat> {
       body: Container(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-           crossAxisAlignment: CrossAxisAlignment.stretch,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             StreamBuilder<QuerySnapshot>(
+              /*
+              snapshots return a stream
+               */
               stream: firestore.collection('Messages').snapshots(),
               builder: (context, snapshot) {
-                // ignore: deprecated_member_use
-                final messages = snapshot.data.documents;
                 if (snapshot.hasData) {
                   // ignore: deprecated_member_use
+                  List<Text> textWidgets = [];
+                  // ignore: deprecated_member_use
                   final messages = snapshot.data.documents;
-                  List<Text> messageWidgets = [];
-
                   for (var msg in messages) {
-                    final message = msg['information'];
-                    final messageWidget = Text('$message');
-                    messageWidgets.add(messageWidget);
+                    final sender = msg['sender'];
+                    final textMsg = msg['information'];
+
+                    final text = Text('$sender \n $textMsg');
+                    textWidgets.add(text);
                   }
                   return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                   // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: messageWidgets,
+                    children: textWidgets,
                   );
                 } else {
                   return Container();
