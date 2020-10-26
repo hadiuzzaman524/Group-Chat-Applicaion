@@ -34,12 +34,27 @@ class _ChatState extends State<Chat> {
   /*
   Retrieve data from cloud fire store.
    */
-  getMessage() async{
+ /* getMessage() async{
     // ignore: deprecated_member_use
     final messages=await firestore.collection('Messages').getDocuments();
     // ignore: deprecated_member_use
     for(var m in messages.documents){
       print(m.data());
+    }
+  }*/
+
+  getStream() async{
+    /*
+    snapshots() method return a Stream , it help us to see message immediately,
+    when any text or data push in storage at a time Snapshots notify us , but privious
+    getMessage() method can not notify immediately this method need every time
+    refresh our app
+     */
+    await for(var snapshots in firestore.collection('Messages').snapshots()){
+      // ignore: deprecated_member_use
+      for(var m in snapshots.documents){
+        print(m.data());
+      }
     }
   }
 
@@ -64,7 +79,7 @@ class _ChatState extends State<Chat> {
                 /*auth.signOut();
                 SystemNavigator.pop();
                 showToast('Sign Out and Exit Successfully');*/
-                getMessage();
+                getStream();
               },
               child: Icon(
                 Icons.backspace,
