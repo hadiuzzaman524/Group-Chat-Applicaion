@@ -91,15 +91,16 @@ class _ChatState extends State<Chat> {
       appBar: AppBar(
         title: Text('Chat'),
         centerTitle: true,
+        backgroundColor: Colors.cyan,
         actions: [
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: GestureDetector(
               onTap: () {
-                /*auth.signOut();
+                auth.signOut();
                 SystemNavigator.pop();
-                showToast('Sign Out and Exit Successfully');*/
-                getStream();
+                showToast('Sign Out and Exit Successfully');
+               // getStream();
               },
               child: Icon(
                 Icons.backspace,
@@ -188,7 +189,7 @@ class StreamBuilderInfo extends StatelessWidget {
           // ignore: deprecated_member_use
           List<MessageStyle> textWidgets = [];
           // ignore: deprecated_member_use
-          final messages = snapshot.data.documents;
+          final messages = snapshot.data.documents.reversed;
           for (var msg in messages) {
             final sender = msg['sender'];
             final textMsg = msg['information'];
@@ -207,12 +208,15 @@ class StreamBuilderInfo extends StatelessWidget {
           }
           return Expanded(
             child: ListView(
+              reverse: true,
               children: textWidgets,
             ),
           );
         } else {
-          return CircularProgressIndicator(
-            backgroundColor: Colors.blue,
+          return Center(
+            child: CircularProgressIndicator(
+              backgroundColor: Colors.blue,
+            ),
           );
         }
       },
@@ -236,7 +240,7 @@ class MessageStyle extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
+        crossAxisAlignment:isMe?CrossAxisAlignment.end:CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.only(right: 5.0),
@@ -249,21 +253,25 @@ class MessageStyle extends StatelessWidget {
             ),
           ),
           Material(
-            borderRadius: BorderRadius.only(
+            borderRadius:isMe? BorderRadius.only(
               bottomLeft: Radius.circular(30.0),
               bottomRight: Radius.circular(30.0),
               topLeft: Radius.circular(30.0),
+            ):BorderRadius.only(
+              bottomLeft: Radius.circular(30.0),
+              bottomRight: Radius.circular(30.0),
+              topRight: Radius.circular(30.0),
             ),
             elevation: 5.0,
-            color: isMe?Colors.blue:Colors.amber,
+            color: isMe?Colors.cyan:Color(0xFFEDEDED),
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
               child: Text(
                 '$textMsg',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.white,
+                  color:isMe? Colors.white:Colors.black87,
                 ),
               ),
             ),
