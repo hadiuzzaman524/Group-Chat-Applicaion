@@ -1,6 +1,6 @@
 # Group-Chat-Applicaion
 
-This is e simple group chat application. I can built it using Flutter, For database i can use Firebase FireStore, For quick respose i can used StreamBuilder but here have a small problem messageing order will not good. I can fixed it very soon, I attatched some screenshoot below,
+This is e simple group chat application. I can built it using Flutter, For database i can use Firebase FireStore, For quick respose i can used StreamBuilder but here have a small problem messageing order will not good. I can fixed it very soon, I attatched some screenshoots below,
 
 #First Screen 
 
